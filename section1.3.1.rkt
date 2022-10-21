@@ -149,5 +149,3 @@
   (filtered-accumulate * 1 identity 1 inc n relative-prime-to-n?))
 (sum-prime-square 1 5)
 (product-relative-prime 10)
-
-(display "Section 1.3.2\n")

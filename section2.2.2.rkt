@@ -87,8 +87,10 @@
 
 (define (total-weight mobile)
   (cond ((null? mobile) 0)
-        ((pair? mobile) (+ (total-weight (branch-structure (left-branch mobile)))
-                           (total-weight (branch-structure (right-branch mobile)))))
+        ((pair? mobile) (+ (total-weight
+                            (branch-structure (left-branch mobile)))
+                           (total-weight
+                            (branch-structure (right-branch mobile)))))
         (else mobile)))
 
 (let ((a (make-mobile (make-branch 2 3) (make-branch 2 3))))

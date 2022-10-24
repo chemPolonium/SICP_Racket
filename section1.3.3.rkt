@@ -54,11 +54,11 @@
   (fixed-point (lambda (y) (average y (/ x y)))
                1.0))
 
-(display "Exercise 1.35\n")
+(displayln "Exercise 1.35")
 (fixed-point (lambda (x) (+ 1 (/ 1 x)))
              1.0)
 
-(display "Exercise 1.36\n")
+(displayln "Exercise 1.36")
 (define (fixed-point-display f first-guess)
   (define (close-enough? v1 v2)
     (< (abs (- v1 v2))
@@ -76,7 +76,7 @@
 (fixed-point-display (lambda (x) (/ (log 1000) (log x)))
                      4.55)
 
-(display "Exercise 1.37\n")
+(displayln "Exercise 1.37")
 (define (cont-frac-recurse n d k)
   (define (iter i)
     (if (> i k)
@@ -96,7 +96,7 @@
            (lambda (i) 1.0)
            3)
 
-(display "Exercise 1.38\n")
+(displayln "Exercise 1.38")
 (define (e-euler k)
   (+ 2.0
      (cont-frac (lambda (i) 1)
@@ -106,7 +106,7 @@
                 k)))
 (e-euler 10)
 
-(display "Exercise 1.39\n")
+(displayln "Exercise 1.39")
 (define (tan-cf x k)
   (cont-frac (lambda (i) (if (= i 1)
                              x

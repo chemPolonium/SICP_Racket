@@ -11,7 +11,7 @@
 (define (y-point p)
   (cdr p))
 
-(display "Exercise 2.2\n")
+(displayln "Exercise 2.2")
 (define (print-point p)
   (newline)
   (display "(")
@@ -42,7 +42,7 @@
 (print-point (mid-point (make-segment (make-point 5.0 3.0)
                                       (make-point 2.0 8.0))))
 
-(display "Exercise 2.3\n")
+(displayln "Exercise 2.3")
 (define (make-rectangle bottom-left top-right)
   (cons bottom-left top-right))
 (define (bottom-left rect)

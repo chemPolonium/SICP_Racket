@@ -8,7 +8,7 @@
 (define (car0 z) (z 0))
 (define (cdr0 z) (z 1))
 
-(display "Exercise 2.4\n")
+(displayln "Exercise 2.4")
 (define (cons1 x y)
   (lambda (m) (m x y)))
 (define (car1 z)
@@ -19,7 +19,7 @@
 (car1 (cons1 3 5))
 (cdr1 (cons1 3 5))
 
-(display "Exercise 2.5\n")
+(displayln "Exercise 2.5")
 (define (divisible-log p n)
   (if (not (= (remainder n p) 0))
       0
@@ -37,7 +37,7 @@
 (car2 (cons2 3 5))
 (cdr2 (cons2 3 5))
 
-(display "Exercise 2.6")
+(displayln "Exercise 2.6")
 (define zero (lambda (f) (lambda (x) x)))
 (define (add-1 n)
   (lambda (f) (lambda (x) (f ((n f) x)))))

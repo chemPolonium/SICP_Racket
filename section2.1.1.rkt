@@ -74,7 +74,7 @@
 ;6/9
 (newline)
 
-(display "Exercise 2.1\n")
-(display "defined in line 51\n")
+(displayln "Exercise 2.1")
+(displayln "defined in line 51")
 (print-rat (sub-rat one-third one-half))
 (print-rat (make-rat 1 (- 2)))

@@ -24,16 +24,16 @@
                  (make-interval (/ 1.0 (upper-bound y))
                                 (/ 1.0 (lower-bound y)))))
 
-(display "Exercise 2.7\n")
-(display "defined at line 3\n")
+(displayln "Exercise 2.7")
+(displayln "defined at line 3")
 
-(display "Exercise 2.8\n")
+(displayln "Exercise 2.8")
 (define (sub-interval0 x y)
   (make-interval (- (lower-bound x) (upper-bound y))
                  (- (upper-bound x) (lower-bound y))))
 
-(display "Exercise 2.9\n")
-(display "in comment\n")
+(displayln "Exercise 2.9")
+(displayln "in comment")
 ;(lower-bound (+ a b c))
 ; =(+ (lower-bound a)
 ;     (lower-bound b)
@@ -43,7 +43,7 @@
 (div-interval (make-interval 1 2)
               (make-interval 3 4))
 
-(display "Exercise 2.10\n")
+(displayln "Exercise 2.10")
 (define (div-interval-checkzero x y)
   (if (and (>= (upper-bound y) 0)
            (<= (lower-bound y) 0))
@@ -52,7 +52,7 @@
 ;will cause error:
 ;(div-interval-checkzero (make-interval 1 2) (make-interval -1 1))
 
-(display "Exercise 2.11\n")
+(displayln "Exercise 2.11")
 ; # (a b) (c d)  lo  hi
 ; 1  + +   + +   ac  bd
 ; 2  + +   - +   bc  bd
@@ -103,7 +103,7 @@
                     ; case 9
                     (make-interval (* b d) (* a c))))))))
 
-(display "Exercise 2.13\n")
+(displayln "Exercise 2.13")
 (define (make-interval-center-percent c pct)
   (let ((width (* c (/ pct 100))))
     (make-interval (- c width) (+ c width))))
@@ -122,7 +122,7 @@
      one (add-interval (div-interval one r1)
                        (div-interval one r2)))))
 
-(display "Exercise 2.14, 2.15\n")
+(displayln "Exercise 2.14, 2.15")
 ; consider a simplest situation:
 ; a / a, which should be 1, but not 1
 ; the existence of same interval will
@@ -141,6 +141,6 @@
   (display (par2 r1 r2))
   (newline))
 
-(display "Exercise 2.16\n")
+(displayln "Exercise 2.16")
 (display "A computer algebra system is needed, the program
 need to have the ability to recognize the same interval.\n")

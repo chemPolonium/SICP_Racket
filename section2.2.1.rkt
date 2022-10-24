@@ -42,7 +42,7 @@ one-through-four
       list2
       (cons (car list1) (append (cdr list1) list2))))
 
-(display "Exercise 2.17\n")
+(displayln "Exercise 2.17")
 (define (last-pair l)
   (let ((rem (cdr l)))
     (if (null? rem)
@@ -51,7 +51,7 @@ one-through-four
 
 (last-pair (list 23 72 149 34))
 
-(display "Exercise 2.18\n")
+(displayln "Exercise 2.18")
 (define (reverse l)
   (define (iter r l)
     (if (null? l)
@@ -61,7 +61,7 @@ one-through-four
 
 (reverse (list 1 4 9 16 25))
 
-(display "Exercise 2.19\n")
+(displayln "Exercise 2.19")
 (define us-coins (list 50 25 10 5 1))
 (define uk-coins (list 100 50 20 10 5 2 1 0.5))
 
@@ -90,7 +90,7 @@ one-through-four
 (define unsorted-us-coins (list 25 50 5 10 1))
 (cc 100 unsorted-us-coins)
 
-(display "Exercise 2.20\n")
+(displayln "Exercise 2.20")
 (define (same-parity x . xs)
   (define same-parity-with-first?
     (if (odd? x)
@@ -132,7 +132,7 @@ one-through-four
   (map (lambda (x) (* x factor))
        items))
 
-(display "Exercise 2.21\n")
+(displayln "Exercise 2.21")
 (define (square-list0 items)
   (if (null? items)
       null
@@ -144,8 +144,8 @@ one-through-four
 (square-list0 (list 1 2 3 4))
 (square-list (list 1 2 3 4))
 
-(display "Exercise 2.22\n")
-(display "Explained in comments\n")
+(displayln "Exercise 2.22")
+(displayln "Explained in comments")
 ; (cons (square (car things))
 ;       answer)
 ; makes '((square (car things)) answer)
@@ -154,13 +154,12 @@ one-through-four
 ; (cons answer (square (car things)))
 ; makes (((s1 s2) s3) s4)
 
-(display "Exercise 2.23\n")
+(displayln "Exercise 2.23")
 (define (for-each f items)
   (cond ((null? items) #t)
         (else (f (car items))
               (for-each f (cdr items)))))
 
 (for-each (lambda (x)
-            (newline)
-            (display x))
+            (displayln x))
           (list 57 321 88))

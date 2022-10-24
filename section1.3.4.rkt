@@ -50,7 +50,7 @@
 (define (cubic a b c)
   (lambda (x) (+ (* x (+ (* x (+ x a)) b)) c)))
 
-(display "Exercise 1.41\n")
+(displayln "Exercise 1.41")
 (define (double f)
   (lambda (x) (f (f x))))
 
@@ -63,13 +63,13 @@
 ; =(inc16)
 (((double (double double)) inc) 5)
 
-(display "Exercise 1.42\n")
+(displayln "Exercise 1.42")
 (define (compose f g)
   (lambda (x) (f (g x))))
 
 ((compose square inc) 6)
 
-(display "Exercise 1.43\n")
+(displayln "Exercise 1.43")
 (define (repeated f n)
   (if (= n 1)
       f
@@ -77,7 +77,7 @@
 
 ((repeated square 2) 5)
 
-(display "Exercise 1.44\n")
+(displayln "Exercise 1.44")
 (define (smooth f)
   (lambda (x) (/ (+ (f (- x dx))
                     (f x)
@@ -95,7 +95,7 @@
 (nth-root 2 2)
 (nth-root 5 5)
 
-(display "Exercise 1.46\n")
+(displayln "Exercise 1.46")
 (define (iterative-improve good-enough? improve)
   (define (iter guess)
     (if (good-enough? guess)

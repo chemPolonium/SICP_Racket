@@ -106,3 +106,80 @@
 (length0 `(1 2 3 4 5))
 
 (displayln "Exercise 2.34")
+(define (horner-eval x coefficient-sequence)
+  (accumulate (lambda (this-coeff higher-terms)
+                (+ (* higher-terms x)
+                   this-coeff))
+              0
+              coefficient-sequence))
+
+(let ((x 2))
+  (+ 1
+     (* 3 x)
+     (* 5 (expt x 3))
+     (expt x 5)))
+(horner-eval 2 (list 1 3 0 5 0 1))
+
+(displayln "Exercise 2.35")
+(define (count-leaves t)
+  (accumulate
+   +
+   0
+   (map (lambda (x)
+          (cond ((null? x) 0)
+                ((list? x) (count-leaves x))
+                (else 1)))
+        t)))
+
+(count-leaves '(1 2 () () (3 ((2 3) 1) ())))
+
+(displayln "Exercise 2.36")
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      null
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+(accumulate-n + 0 '((1 2 3) (4 5 6) (7 8 9) (10 11 12)))
+
+(displayln "Exercise 2.37")
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (lambda (mi)
+         (dot-product mi v))
+       m))
+
+(define (transpose m)
+  (accumulate-n cons null m))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (mi) matrix-*-vector cols mi) m)))
+
+(let ((v '(1 2 3 4))
+      (w '(5 6 7 8))
+      (m '((1 2 3 4) (5 6 7 8) (9 10 11 12)))
+      (n '((1 2 3) (4 5 6) (7 8 9) (10 11 12))))
+  (displayln (dot-product v w))
+  (displayln (matrix-*-vector m v))
+  (displayln (transpose m))
+  (displayln (matrix-*-matrix m n)))
+
+(displayln "Exercise 2.38")
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+(define (fold-right op initial sequence)
+  (accumulate op initial sequence))
+
+(fold-right / 1 (list 1 2 3))
+(fold-left / 1 (list 1 2 3))
+(fold-right list null (list 1 2 3))
+(fold-left list null (list 1 2 3))

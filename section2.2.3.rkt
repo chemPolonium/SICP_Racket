@@ -183,3 +183,22 @@
 (fold-left / 1 (list 1 2 3))
 (fold-right list null (list 1 2 3))
 (fold-left list null (list 1 2 3))
+
+(displayln "(op (op a b) c) = (op a (op b c))")
+(displayln "example: a + (b + c) = (a + b) + c")
+(fold-right + 0 (list 1 2 3))
+(fold-left + 0 (list 1 2 3))
+
+(displayln "Exercise 2.39")
+(define (reverse-fold-right sequence)
+  (fold-right (lambda (x y) (cond ((null? y) x)
+                             ((not (pair? y)) (list y x))
+                             (else (append y (list x)))))
+         null
+         sequence))
+(define (reverse-fold-left sequence)
+  (fold-left (lambda (x y) (cons y x))
+         null
+         sequence))
+(reverse-fold-right '(1 2 3 4 5))
+(reverse-fold-left '(1 2 3 4 5))

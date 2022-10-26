@@ -1,6 +1,7 @@
 #lang racket
 
 (require "common_lib.rkt")
+(require math/number-theory)
 
 (define (square x) (* x x))
 (define (sum-odd-squares0 tree)
@@ -192,13 +193,81 @@
 (displayln "Exercise 2.39")
 (define (reverse-fold-right sequence)
   (fold-right (lambda (x y) (cond ((null? y) x)
-                             ((not (pair? y)) (list y x))
-                             (else (append y (list x)))))
-         null
-         sequence))
+                                  ((not (pair? y)) (list y x))
+                                  (else (append y (list x)))))
+              null
+              sequence))
 (define (reverse-fold-left sequence)
   (fold-left (lambda (x y) (cons y x))
-         null
-         sequence))
+             null
+             sequence))
 (reverse-fold-right '(1 2 3 4 5))
 (reverse-fold-left '(1 2 3 4 5))
+
+(displayln "Nested Mappings")
+
+; (accumulate
+;  append null (map (lambda (i)
+;                     (map (lambda (j) (list i j))
+;                          (enumerate-interval 1 (-i 1))))
+;                   (enumerate-interval 1 6)))
+
+(define (flatmap proc seq)
+  (accumulate append null (map proc seq)))
+
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+
+(define (prime-sum-pairs0 n)
+  (map make-pair-sum
+       (filter prime-sum? (flatmap
+                           (lambda (i)
+                             (map (lambda (j) (list i j))
+                                  (enumerate-interval 1 (- i 1))))
+                           (enumerate-interval 1 n)))))
+
+(prime-sum-pairs0 6)
+
+(define (remove item sequence)
+  (filter (lambda (x) (not (= x item)))
+          sequence))
+
+(define (permutations s)
+  (if (null? s)
+      (list null)
+      (flatmap (lambda (x)
+                 (map (lambda (p) (cons x p))
+                      (permutations (remove x s))))
+               s)))
+
+(displayln "Exercise 2.40")
+(define (unique-pairs n)
+  (flatmap (lambda (i)
+             (map (lambda (j) (list i j))
+                  (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (unique-pairs n))))
+
+(prime-sum-pairs 6)
+
+(displayln "Exercise 2.41")
+(define (unique-triples n)
+  (flatmap (lambda (i)
+             (map (lambda (kj) (list (cadr kj) (car kj) i))
+                  (unique-pairs (- i 1))))
+           (enumerate-interval 1 n)))
+
+(define (ordered-triples-sum-s n s)
+  (filter (lambda (x) (= (apply + x) s))
+          (unique-triples n)))
+
+(ordered-triples-sum-s 6 8)
+
+(displayln "Exercise 2.42")

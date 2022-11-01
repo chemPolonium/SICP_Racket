@@ -271,3 +271,48 @@
 (ordered-triples-sum-s 6 8)
 
 (displayln "Exercise 2.42")
+; (cons queen-k queen-o)
+; insert new kth queen at begin of the list is a better way to make lists
+; queen-k will be (car positions) and queen-o will be (cdr positions)
+; the horz distance between queen-k and queen-o will be just a inc range
+; and one more advantange: the answer will be symmertic, so there is no
+;   need for reverse
+(define (queens board-size)
+  (define empty-board null)
+  (define (safe? k positions)
+    (let ((queen-k (car positions))
+          (queen-o (cdr positions)))
+      (let ((horz-occupied queen-o)
+            ; there is no need to consider out of the board
+            ; because out-of-board diag-occupied will just
+            ; not conflict with the queen-k
+            ; (we won't place queen-k out of the board)
+            (diag-occupied (map + queen-o (range 1 k)))
+            (adiag-occupied (map - queen-o (range 1 k))))
+        (nor (member queen-k horz-occupied)
+             (member queen-k diag-occupied)
+             (member queen-k adiag-occupied)))))
+  (define (adjoin-position new-row k rest-of-queens)
+    (cons new-row rest-of-queens))
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position
+                    new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+(queens 8)
+
+(displayln "Exercise 2.43")
+(displayln "Explained in comments")
+; this interchange deprives the ability of cutting the
+; (queen-cols (- k 1)) off at queen-k. It will produce all the arranges
+; and then judge them (in one arrange: one by one k in procedure)
+; one by one.

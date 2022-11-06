@@ -151,11 +151,11 @@
 
 (displayln "Exercise 2.58 a")
 (define (infix->prefix exp)
-  (if (pair? exp)
-      (list (infix->prefix (cadr exp))
-            (car exp)
-            (infix->prefix (caddr exp)))
-      exp))
+  (cond [(number? exp) exp]
+        [(variable? exp) exp]
+        [else (list (cadr exp)
+                    (infix->prefix (car exp))
+                    (infix->prefix (caddr exp)))]))
 
 (displayln "Exercise 2.58 b")
 (define (add-brackets exp)
@@ -174,6 +174,13 @@
         (else
          (error "invalid function" exp))))
 
+(define (prefix->infix exp)
+  (cond [(number? exp) exp]
+        [(variable? exp) exp]
+        [else (list (prefix->infix (cadr exp))
+                    (car exp)
+                    (prefix->infix (caddr exp)))]))
+
 (add-brackets '(2 * 4 + 1))
 (add-brackets '(2 + 4 * 1))
 (add-brackets '(2 + 2 + 2))
@@ -185,5 +192,11 @@
   (deriv (infix->prefix exp) var))
 (define (deriv-std exp var)
   (deriv-infix (add-brackets exp) var))
+(define (deriv-std->std exp var)
+  (prefix->infix (deriv-std exp var)))
 
 (deriv-std '(x + 3 * (x + y + 2)) 'x)
+(deriv-std '(x + 3 * x * y + y + 2) 'x)
+
+(deriv-std->std '(x + 3 * x * y + y + 2) 'x)
+(deriv-std->std '(x + 3 * x * y * x + y + 2) 'x)

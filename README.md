@@ -37,7 +37,7 @@ Magic Racket needs install language-server to run. So we need to use `raco`(incl
 raco pkg install racket-langserver
 ```
 
-There are two buttons "Load file in REPL" and "Run file in Terminal" on the top right. If you want to run interactively you can use "Load file in REPL", this will run the file. Then with new lines you write, select the code you want to run, use `alt enter` to run it (see the notes below! Sometimes it can get an error). If you just want to run all the file at once, use "Run file in Terminal".
+There are two buttons "Load file in REPL" and "Run file in Terminal" on the top right. If you want to run interactively you can use "Load file in REPL", this will run the file. Then with new lines you write, select the code you want to run, use `alt enter` to run it (see the notes below! Sometimes it can get an error). Or just use "Load file in REPL" and the code will run if changed. If you just want to run all the file at once, use "Run file in Terminal".
 
 Personnaly, I use these setups in my vscode config file:
 

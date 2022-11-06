@@ -6,6 +6,8 @@ This is my SICP (Structure and Interpretation of Computer Programs) reading note
 
 I use Racket to do the exercises.
 
+Issues (both in Chinese or English) (both bugs or whatever you are confused about) are welcomed.
+
 ## Why I use Racket?
 
 There are some advantages using Racket:

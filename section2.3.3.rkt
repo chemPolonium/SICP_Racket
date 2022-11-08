@@ -1,7 +1,5 @@
 #lang racket
 
-(require racket/trace)
-
 (displayln "Section 2.3.3 Example: Representing Sets")
 
 (displayln "Sets as unordered lists")
@@ -100,3 +98,158 @@
 (union-set-ol '(1 3 6) '(2 3 5))
 
 (displayln "Sets as binary trees")
+
+(define (entry tree) (car tree))
+
+(define (left-branch tree) (cadr tree))
+
+(define (right-branch tree) (caddr tree))
+
+(define (make-tree entry left right)
+  (list entry left right))
+
+(define (element-of-set-bt? x set)
+  (cond [(null? set) false]
+        [(= x (entry set)) true]
+        [(< x (entry set))
+         (element-of-set-bt? x (left-branch set))]
+        [(> x (entry set))
+         (element-of-set-bt? x (right-branch set))]))
+
+(define (adjoin-set-bt x set)
+  (cond [(null? set) (make-tree x empty empty)]
+        [(= x (entry set)) set]
+        [(< x (entry set))
+         (make-tree (entry set)
+                    (adjoin-set-bt x (left-branch set))
+                    (right-branch set))]
+        [(> x (entry set))
+         (make-tree (entry set)
+                    (left-branch set)
+                    (adjoin-set-bt x (right-branch set)))]))
+
+(displayln "Exercise 2.63")
+
+; the "append" in tree->list-1 is O(n), but "cons" in tree->list-1 is O(1)
+(define (tree->list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree->list-1 (left-branch tree))
+              (cons (entry tree)
+                    (tree->list-1
+                     (right-branch tree))))))
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list
+                             (right-branch tree)
+                             result-list)))))
+  (copy-to-list tree '()))
+
+(define test-tree-1
+  '(7 (3 (1 () ())
+         (5 () ()))
+      (9 ()
+         (11 () ()))))
+(tree->list-1 test-tree-1)
+(tree->list-2 test-tree-1)
+
+(define test-tree-2
+  '(3 (1 () ())
+      (7 (5 () ())
+         (9 ()
+            (11 () ())))))
+(tree->list-1 test-tree-2)
+(tree->list-2 test-tree-2)
+
+(define test-tree-3
+  '(5 (3 (1 () ())
+         ())
+      (9 (7 () ())
+         (11 () ()))))
+(tree->list-1 test-tree-3)
+(tree->list-2 test-tree-3)
+
+(displayln "Exercise 2.64")
+
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+(define (partial-tree elts n)
+  ; this is a O(n) procedure
+  ; each operationg is O(1)
+  ; each element is accessed once
+  ; so it's O(n)
+  (if (= n 0)
+      ; elts is '(), so non-left-elts will be '()
+      ; first '() is the left-tree
+      (cons '() elts)
+      ; consuming the left half elements
+      (let* ([left-size (quotient (sub1 n) 2)]
+             [left-result (partial-tree elts left-size)])
+        ; parse the left result to left-tree and non-left-elts
+        ; get the right-size by sub the current tree total size and the left-tree size
+        (let ([left-tree (car left-result)]
+              [non-left-elts (cdr left-result)]
+              [right-size (- n 1 left-size)])
+          ; the first non-left-elts will the the entry
+          ; then the right-result can be calculated
+          ; right-result is calculated using the right elements
+          (let ([this-entry (car non-left-elts)]
+                [right-result (partial-tree
+                               (cdr non-left-elts)
+                               right-size)])
+            ; parse the right-result
+            (let ([right-tree (car right-result)]
+                  [remaining-elts (cdr right-result)])
+              ; return (left-tree remaining-elts)
+              (cons (make-tree this-entry
+                               left-tree
+                               right-tree)
+                    remaining-elts)))))))
+
+(list->tree '(1 2 3 4 5 6 7))
+;      4
+;    /    \
+;   2      6
+;  / \    / \
+; 1   3  5   7
+
+(displayln "Exercise 2.65")
+
+(define (union-set-bt set1 set2)
+  (list->tree (union-set-ol (tree->list-2 set1)
+                            (tree->list-2 set2))))
+
+(define test-tree-4 (list->tree '(1 2 3 4 8 9)))
+(define test-tree-5 (list->tree '(3 4 5 6 7 10)))
+
+(union-set-bt test-tree-4 test-tree-5)
+(tree->list-2 (union-set-bt test-tree-4 test-tree-5))
+
+(displayln "Sets and information retrieval")
+
+(define (make-record key value)
+  (cons key value))
+
+(define (key record)
+  ((car record)))
+
+(define (lookup-ul given-key set-of-records)
+  (cond [(null? set-of-records) false]
+        [(equal? given-key (key (car set-of-records)))
+         (car set-of-records)]
+        [else (lookup-ul given-key (cdr set-of-records))]))
+
+(define (lookup-bd given-key set-of-records)
+  (cond [(null? set-of-records) false]
+        [(= given-key (key (entry set-of-records)))
+         (entry set-of-records)]
+        [(< given-key (key (entry set-of-records)))
+         (lookup-bd given-key (left-branch set-of-records))]
+        [(> given-key (key (entry set-of-records)))
+         (lookup-bd given-key (right-branch set-of-records))]))

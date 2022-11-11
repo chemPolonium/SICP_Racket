@@ -145,3 +145,19 @@
 (define sample-rock-lyric-encoded (encode sample-rock-lyric rock-tree))
 
 (decode sample-rock-lyric-encoded rock-tree)
+
+(displayln "Exercise 2.71")
+
+; most frequent 1
+; least frequent 5
+(generate-huffman-tree '((A 1) (B 2) (C 4) (D 8) (E 16)))
+
+; most frequent 1
+; least frequent 5
+(generate-huffman-tree
+ '((A 1) (B 2) (C 4) (D 8) (E 16) (F 32) (G 64) (H 128) (I 256) (J 512)))
+
+(displayln "Exercise 2.72")
+
+; best O(1)
+; worst O(n)

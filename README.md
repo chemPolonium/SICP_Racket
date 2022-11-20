@@ -31,7 +31,7 @@ And it's done! Open DrRacket in Start Menu (of Start Menu/Scoop Apps) and code!
 
 ### Use vscode
 
-I recommend [Magic Racket](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket) and [Racket Helpers](https://marketplace.visualstudio.com/items?itemName=Calvin-LL.racket-helpers) for best vscode experience.
+I recommend [Magic Racket](https://marketplace.visualstudio.com/items?itemName=evzen-wybitul.magic-racket) (the language server extension) and [AyaSEditor](https://marketplace.visualstudio.com/items?itemName=ayanamists.ayaseditor) (extension for indenting) for best vscode experience.
 
 Magic Racket needs install language-server to run. So we need to use `raco`(included in the Racket installation) to install it:
 
@@ -46,17 +46,13 @@ Personnaly, I use these setups in my vscode config file:
 ```
 "[racket]": {
         "editor.guides.indentation": false,
-        "editor.formatOnType": true,
-        "editor.tabSize": 2
     },
-    "racket-helpers.enableDoubleClick": false,
 ```
 
 I added these configs because:
 
 * Racket (or Scheme) has its own indent method showing the structure of the program, the indentation guide is useless and can sometimes be confusing.
-* vscode does not understand the indentation for Racket, so the auto indent will sometimes make life harder, so each time I hit enter, I hope the code is formatted by the extension.
-* Sometimes the 2-space tab size is useful in Racket.
-* Racket Helpers provide a double-click method to select the whole brackets, however it's not useful when refactoring the code. I would recommend use `ctrl shift up/down` instead.
+
+Some people will perfer disabling the "auto close brackets" feature of vscode. But I left it open (default) because the language server will not work (I mean add the function name you just typed to the autocomplete list) unless the brackets are well paired (In fact it needs the file having no error).
 
 Some notes for using vscode: use `alt enter` to "run in REPL" cannot handle long lines, so if you get error you can try using "Run file in Terminal"

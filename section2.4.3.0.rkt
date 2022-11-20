@@ -1,5 +1,7 @@
 #lang racket
 
+(displayln "2.4.3 Data-Directed Programming and Additivity")
+
 (define *complex-number-table* (make-hash))
 
 (define (put-complex key1 key2 value)
@@ -204,3 +206,41 @@
 ; ; answer for d
 ; (define (get-deriv type func)
 ;   (hash-ref *deriv-table* (list func type) #f))
+
+(displayln "Exercise 2.74")
+
+(define *insatiable-table* (make-hash))
+
+(define (division file)
+  (type-tag file))
+
+(define (put-insatiable func type value)
+  (hash-set! *insatiable-table* (list func type) value))
+
+(define (get-insatiable func type)
+  (hash-ref *insatiable-table* (list func type)))
+
+; a
+(define (get-record employee-id file)
+  (attach-tag (division file)
+              ((get-insatiable 'get-record (division file))
+               employee-id file)))
+
+; b
+(define (get-salary record)
+  (let ([record-type (type-tag record)]
+        [record-content (contents record)])
+    ((get-insatiable 'get-salary record-type) record-content)))
+
+; c
+(define (find-employee-record employee-id file-list)
+  (if (null? file-list)
+      #f
+      (let ([current-file (car file-list)])
+        (if (get-record employee-id current-file)
+            (get-record employee-id current-file)
+            (find-employee-record employee-id (cdr file-list))))))
+
+; d
+; implement get-record get-salary
+; write a new install-package

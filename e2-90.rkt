@@ -312,38 +312,207 @@
 
 (displayln "Section 2.5.3 Example: Symbolic Algebra")
 
-(define (make-polynomial var terms)
-  ((get 'make 'polynomial) var terms))
+(define (install-term-package)
+  ;; this is the term package for term-list
+
+  ;; a term is '(list order coeff)
+  (define (make-term order coeff)
+    (cons order coeff))
+  (define (order term)
+    (car term))
+  (define (coeff term)
+    (cdr term))
+
+  ;; external port
+  (define (tag x) (attach-tag 'term x))
+  (put 'make-term 'term
+       (lambda (order coeff) (tag (make-term order coeff))))
+  (put 'order '(term)
+       (lambda (term) (order term)))
+  (put 'coeff '(term)
+       (lambda (term) (coeff term)))
+  'done)
+
+(install-term-package)
+
+(define (make-term order coeff)
+  ((get 'make-term 'term) order coeff))
+(define (order term)
+  (apply-generic 'order term))
+(define (coeff term)
+  (apply-generic 'coeff term))
+
+(define (install-dense-package)
+  ;; this is the dense TERM-LIST package
+
+  ;; basic term-list structure
+  (define (make-dense term-list)
+    term-list)
+  (define (empty-termlist? l)
+    (null? l))
+
+  ;; extract the first term and rest terms
+  (define (first-term-order term-list)
+    (sub1 (length term-list)))
+  (define (first-term-coeff term-list)
+    (car term-list))
+  (define (rest-terms term-list)
+    (cdr term-list))
+
+  ;; adjoin a external term to the term-list
+  (define (adjoin-term term term-list)
+    (cond [(=zero? (coeff term)) term-list]
+          [(= (order term) (length term-list)) (cons (coeff term) term-list)]
+          [else (adjoin-term term (cons 0 term-list))]))
+
+  ;; negative procedure
+  (define (neg-dense term-list)
+    (map neg term-list))
+
+  ;; =zero? procedure
+  (define (=zero?-dense term-list)
+    (andmap =zero? term-list))
+
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'dense x))
+  (put 'make-from-dense 'dense
+       (lambda (term-list) (tag (make-dense term-list))))
+  (put 'empty-termlist? '(dense)
+       (lambda (term-list) (empty-termlist? term-list)))
+  (put 'first-term '(dense)
+       (lambda (term-list) (make-term (first-term-order term-list)
+                                      (first-term-coeff term-list))))
+  (put 'rest-terms '(dense)
+       (lambda (term-list) (tag (rest-terms term-list))))
+  (put 'adjoiner '(dense)
+       (lambda (term-list)
+         (lambda (term)
+           (tag (adjoin-term term term-list)))))
+  (put 'neg '(dense)
+       (lambda (term-list) (neg-dense term-list)))
+  (put '=zero? '(dense)
+       (lambda (term-list) (=zero?-dense term-list)))
+  'done)
+
+(define (install-sparse-package)
+  ;; this is the sparse TERM-LIST package
+
+  ;; basic term-list structure
+  ;; (make-sparse '((3 2) (1 4)))
+  (define (make-sparse term-list)
+    term-list)
+  (define (empty-termlist? l)
+    (null? l))
+
+  ;; internal term
+  (define (make-internal-term order coeff)
+    (list order coeff))
+  (define (order-internal internal-term)
+    (first internal-term))
+  (define (coeff-internal internal-term)
+    (second internal-term))
+
+  ;; extract the first term and rest terms
+  (define (internal-first-term term-list)
+    (first term-list))
+  (define (first-term-order term-list)
+    (order-internal (internal-first-term term-list)))
+  (define (first-term-coeff term-list)
+    (coeff-internal (internal-first-term term-list)))
+  (define (rest-terms term-list)
+    (cdr term-list))
+
+  ;; adjoin a term to the term-list
+  (define (adjoin-term term term-list)
+    (if (=zero? (coeff term))
+        term-list
+        (cons (make-internal-term (order term) (coeff term))
+              term-list)))
+
+  ;; negative procedure
+  (define (neg-sparse term-list)
+    (map (lambda (internal-term)
+           (make-internal-term (order-internal internal-term)
+                               (neg (coeff-internal internal-term))))
+         term-list))
+
+  ;; zero? procedure
+  (define (=zero?-sparse term-list)
+    (andmap (lambda (internal-term)
+              (=zero? (coeff-internal internal-term)))
+            term-list))
+
+  ;; interface to the rest of the system
+  (define (tag x) (attach-tag 'sparse x))
+  (put 'make-from-sparse 'sparse
+       (lambda (term-list) (tag (make-sparse term-list))))
+  (put 'empty-termlist? '(sparse)
+       (lambda (term-list) (empty-termlist? term-list)))
+  (put 'first-term '(sparse)
+       (lambda (term-list) (make-term (first-term-order term-list)
+                                      (first-term-coeff term-list))))
+  (put 'rest-terms '(sparse)
+       (lambda (term-list) (tag (rest-terms term-list))))
+  (put 'adjoiner '(sparse)
+       (lambda (term-list)
+         (lambda (term)
+           (tag (adjoin-term term term-list)))))
+  (put 'neg '(sparse)
+       (lambda (term-list) (neg-sparse term-list)))
+  (put '=zero? '(sparse)
+       (lambda (term-list) (=zero?-sparse term-list)))
+  'done)
 
 (define (install-polynomial-package)
-  ;; internal procedures
-  ;; representation of poly
-  (define (make-poly variable term-list) (cons variable term-list))
+  ;; the polynomial package
+
+  ;; install the dense package
+  (install-dense-package)
+
+  ;; internal procedures to make dense term-list
+  (define (make-dense-term-list original-term-list)
+    ((get 'make-from-dense 'dense) original-term-list))
+  (define (the-empty-dense-termlist) (make-dense-term-list '()))
+
+  ;; install the sparse package
+  (install-sparse-package)
+
+  ;; internal procedures to make sparse term-list
+  (define (make-sparse-term-list original-term-list)
+    ((get 'make-from-sparse 'sparse) original-term-list))
+  (define (the-empty-sparse-termlist) (make-sparse-term-list '()))
+
+  ;; internal procedure to make a poly
+  (define (make-poly variable term-list)
+    (cons variable term-list))
+
+  ;; procedures to get the variable and term-list
   (define (variable p) (car p))
   (define (term-list p) (cdr p))
-  ;; from section 2.3.2
+
+  ;; exposed procedure to make poly
+  (define (make-poly-from-dense variable original-term-list)
+    (make-poly variable (make-dense-term-list original-term-list)))
+  (define (make-poly-from-sparse variable original-term-list)
+    (make-poly variable (make-sparse-term-list original-term-list)))
+
+  ;; internal procedure to get first term and rest terms from dense and sparse packages
+  (define (first-term term-list)
+    (apply-generic 'first-term term-list))
+  (define (rest-terms term-list)
+    (apply-generic 'rest-terms term-list))
+  (define (empty-termlist? term-list)
+    (apply-generic 'empty-termlist? term-list))
+
+  ;; adjoin-term procedure is provided by dense and sparse package
+  (define (adjoin-term term term-list)
+    ((apply-generic 'adjoiner term-list) term))
+
+  ;; internal peocedures
   (define (variable? x)
     (symbol? x))
   (define (same-variable? v1 v2)
     (and (variable? v1) (variable? v2) (eq? v1 v2)))
-  ;; representation of terms and term lists
-  (define (adjoin-term term term-list)
-    (if (=zero? (coeff term))
-        term-list
-        (cons term term-list)))
-  (define (the-empty-termlist) '())
-  (define (first-term term-list)
-    (car term-list))
-  (define (rest-terms term-list)
-    (cdr term-list))
-  (define (empty-termlist? term-list)
-    (null? term-list))
-  (define (make-term order coeff)
-    (list order coeff))
-  (define (order term)
-    (car term))
-  (define (coeff term)
-    (cadr term))
 
   (define (add-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
@@ -372,16 +541,13 @@
                      (add-terms (rest-terms L1)
                                 (rest-terms L2)))]))]))
 
-  ;; from Exercise 2.88
   (define (sub-poly p1 p2)
     (add-poly p1 (neg-poly p2)))
   (define (neg-poly p)
     (make-poly (variable p)
-               (map (lambda (t)
-                      (make-term (order t)
-                                 (neg (coeff t))))
-                    (term-list p))))
+               (neg (term-list p))))
 
+  ;; multiply term
   (define (mul-poly p1 p2)
     (if (same-variable? (variable p1) (variable p2))
         (make-poly (variable p1)
@@ -390,7 +556,7 @@
   ;; procedures used by mul-poly
   (define (mul-term-by-all-terms t1 L)
     (if (empty-termlist? L)
-        (the-empty-termlist)
+        L
         (let ((t2 (first-term L)))
           (adjoin-term
            ;; t1 * t2 is the highest term
@@ -400,16 +566,24 @@
            (mul-term-by-all-terms t1 (rest-terms L))))))
   (define (mul-terms L1 L2)
     (if (empty-termlist? L1)
-        (the-empty-termlist)
+        L1
         (add-terms (mul-term-by-all-terms (first-term L1) L2)
                    (mul-terms (rest-terms L1) L2))))
 
-  ;; from Exercise 2.87
-  (define (=zero?-polynomial p)
-    (andmap (lambda (t) (=zero? (coeff t))) (term-list p)))
+  (define (=zero?-poly p)
+    (=zero? (term-list p)))
 
-  ;; interface to rest of the system
+  ;; interface to the rest of the system
   (define (tag p) (attach-tag 'polynomial p))
+
+  (put 'make-from-dense 'polynomial
+       (lambda (variable dense-term-list)
+         (tag (make-poly-from-dense variable dense-term-list))))
+
+  (put 'make-from-sparse 'polynomial
+       (lambda (variable sparse-term-list)
+         (tag (make-poly-from-sparse variable sparse-term-list))))
+
   (put 'add '(polynomial polynomial)
        (lambda (p1 p2) (tag (add-poly p1 p2))))
   (put 'mul '(polynomial polynomial)
@@ -417,36 +591,28 @@
   (put 'make 'polynomial
        (lambda (var terms) (tag (make-poly var terms))))
 
-  ;; from Exercise 2.87
   (put '=zero? '(polynomial)
-       (lambda (p) (=zero?-polynomial p)))
+       (lambda (p) (=zero?-poly p)))
 
-  ;; from Exercise 2.88
   (put 'neg '(polynomial)
-       (lambda (p) (neg-poly p)))
+       (tag (lambda (p) (neg-poly p))))
   (put 'sub '(polynomial polynomial)
-       (lambda (p1 p2) (sub-poly p1 p2)))
+       (tag (lambda (p1 p2) (sub-poly p1 p2))))
   'done)
+
+(define (make-polynomial-from-dense variable dense-term-list)
+  ((get 'make-from-dense 'polynomial) variable dense-term-list))
+
+(define (make-polynomial-from-sparse variable sparse-term-list)
+  ((get 'make-from-sparse 'polynomial) variable sparse-term-list))
 
 (install-polynomial-package)
 
-(displayln "Exercise 2.87")
+(make-polynomial-from-dense 'x '(1 2 3 4 5))
+(make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1)))
 
-(=zero? (make-polynomial
-         'x
-         (list (list 3 0)
-               (list 1 (make-complex-from-real-imag 0 0)))))
+(add (make-polynomial-from-dense 'x '(1 2 3 4 5))
+     (make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1))))
 
-(displayln "Exercise 2.88")
-
-(sub (make-polynomial
-      'x
-      (list (list 3 2)
-            (list 1 (make-complex-from-real-imag 1 1))))
-     (make-polynomial
-      'x
-      (list (list 2 1)
-            (list 1 (make-complex-from-real-imag 2 3)))))
-
-(displayln "Exercise 2.89")
-
+(add (make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1)))
+     (make-polynomial-from-dense 'x '(1 2 3 4 5)))

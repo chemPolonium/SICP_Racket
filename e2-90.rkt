@@ -389,7 +389,7 @@
          (lambda (term)
            (tag (adjoin-term term term-list)))))
   (put 'neg '(dense)
-       (lambda (term-list) (neg-dense term-list)))
+       (lambda (term-list) (tag (neg-dense term-list))))
   (put '=zero? '(dense)
        (lambda (term-list) (=zero?-dense term-list)))
   'done)
@@ -458,7 +458,7 @@
          (lambda (term)
            (tag (adjoin-term term term-list)))))
   (put 'neg '(sparse)
-       (lambda (term-list) (neg-sparse term-list)))
+       (lambda (term-list) (tag (neg-sparse term-list))))
   (put '=zero? '(sparse)
        (lambda (term-list) (=zero?-sparse term-list)))
   'done)
@@ -595,9 +595,9 @@
        (lambda (p) (=zero?-poly p)))
 
   (put 'neg '(polynomial)
-       (tag (lambda (p) (neg-poly p))))
+       (lambda (p) (tag (neg-poly p))))
   (put 'sub '(polynomial polynomial)
-       (tag (lambda (p1 p2) (sub-poly p1 p2))))
+       (lambda (p1 p2) (tag (sub-poly p1 p2))))
   'done)
 
 (define (make-polynomial-from-dense variable dense-term-list)
@@ -608,11 +608,21 @@
 
 (install-polynomial-package)
 
-(make-polynomial-from-dense 'x '(1 2 3 4 5))
-(make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1)))
+(define p1 (make-polynomial-from-dense 'x '(1 2 3 4 5)))
+(define p2 (make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1))))
 
-(add (make-polynomial-from-dense 'x '(1 2 3 4 5))
-     (make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1))))
+(add p1 p2)
 
-(add (make-polynomial-from-sparse 'x '((5 2) (3 5) (2 2) (0 1)))
-     (make-polynomial-from-dense 'x '(1 2 3 4 5)))
+(add p2 p1)
+
+(mul p1 p2)
+
+(mul p2 p1)
+
+(neg p1)
+
+(neg p2)
+
+(sub p1 p2)
+
+(sub p2 p1)

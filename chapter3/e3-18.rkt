@@ -1,5 +1,7 @@
 #lang sicp
 
+; the exercise only says taking successive cdrs
+; but this can detect car and cdr loops
 (define (contains-cycle? x)
   (define (cc-2 x l)
     (if (not (pair? x))

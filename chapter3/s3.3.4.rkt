@@ -1,5 +1,7 @@
 #lang sicp
 
+; PARTS
+
 (define (half-adder a b s c)
   (let ([d (make-wire)] [e (make-wire)])
     (or-gate a b d)
@@ -20,7 +22,8 @@
     (let ([new-value (logical-not (get-signal input))])
       (after-delay inverter-delay
                    (lambda () (set-signal! output new-value)))))
-  (add-action! input invert-input) 'ok)
+  (add-action! input invert-input)
+  'ok)
 
 (define (logical-not s)
   (cond [(= s 0) 1]
@@ -114,7 +117,10 @@
                  (display name) (display " ")
                  (display (current-time the-agenda))
                  (display "  New-value = ")
-                 (display (get-signal wire)))))
+                 (display (get-signal wire))
+                 (newline))))
+
+; AGENDA DEFINITION
 
 (define (make-time-segment time queue)
   (cons time queue))
@@ -182,6 +188,8 @@
                            (segment-time first-seg))
         (front-queue (segment-queue first-seg)))))
 
+; QUEUE DEFINITION
+
 (define (make-queue) (cons '() '()))
 
 (define (empty-queue? queue)
@@ -220,9 +228,13 @@
          (set-front-ptr! queue (cdr (front-ptr queue)))
          queue]))
 
+; TIME DEFINITION
+
 (define inverter-delay 2)
 (define and-gate-delay 3)
 (define or-gate-delay 5)
+
+; SIMULATION
 
 (define the-agenda (make-agenda))
 
